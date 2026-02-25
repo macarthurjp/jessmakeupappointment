@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book Your Appointment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #FAF8F5;
+      --card-bg: #FFFFFF;
+      --primary: #A67C52;
+      --primary-soft: #E8D9C9;
+      --border: #E0DAD3;
+      --text-main: #3A3A3A;
+      --text-muted: #8A8A8A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      outline: none;
+      background: #FFFFFF;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(166, 124, 82, 0.12);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+
+    .btn-submit:hover {
+      background: #8E6844;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .success-message {
+      display: none;
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #E4F5EA;
+      color: #285C3C;
+      font-size: 13px;
+    }
+
+    .success-message.visible {
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 40px 16px;
+      }
+      .card {
+        padding: 24px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="logo">JessMakeUP</div>
+      <h1 class="title">Book Your Appointment</h1>
+      <p class="subtitle">Manicure • Pedicure • Self‑Care</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2 class="card-title">Request your session</h2>
+        <p class="card-subtitle">Fill in your details and we’ll confirm via WhatsApp.</p>
+
+        <form id="booking-form">
+          <div class="form-group">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" required placeholder="Your name" />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">WhatsApp number</label>
+            <input id="phone" name="phone" type="tel" required placeholder="+352 6X XX XX XX" />
+            <p class="helper">We’ll use this number to confirm your appointment.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="service">Service</label>
+            <select id="service" name="service" required>
+              <option value="">Select a service</option>
+              <option value="manicure">Manicure</option>
+              <option value="pedicure">Pedicure</option>
+              <option value="mani-pedi">Manicure + Pedicure</option>
+              <option value="gel-removal">Gel removal</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label for="date">Preferred date</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div class="form-group">
+              <label for="time">Preferred time</label>
+              <input id="time" name="time" type="time" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">Request appointment</button>
+
+          <div id="success" class="success-message">
+            Thank you! We’ve received your request. You’ll get a WhatsApp message once we review it.
+          </div>
+        </form>
+      </section>
+
+      <footer class="footer">
+        © 2026 Your Studio · All rights reserved
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // Temporary front-end success state (you’ll replace this with real submission later)
+    const form = document.getElementById('booking-form');
+    const success = document.getElementById('success');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      success.classList.add('visible');
+      form.reset();
+    });
+  </script>
+</body>
+</html>
