@@ -5,7 +5,6 @@
   <title>Book Your Appointment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
@@ -17,6 +16,7 @@
       --border: #E0DAD3;
       --text-main: #3A3A3A;
       --text-muted: #8A8A8A;
+      --danger: #B94A48;
     }
 
     * {
@@ -38,7 +38,7 @@
 
     .page {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
     }
 
     .header {
@@ -153,6 +153,75 @@
       transform: scale(0.98);
     }
 
+    /* TIME BUTTONS GLAM */
+    .time-section {
+      margin-top: 10px;
+    }
+
+    .time-label {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .time-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .time-btn {
+      min-width: 70px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--primary);
+      background: #FFFFFF;
+      color: var(--text-main);
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease, color 0.15s ease;
+    }
+
+    .time-btn:hover {
+      background: var(--primary-soft);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .time-btn.selected {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 8px 18px rgba(166, 124, 82, 0.35);
+    }
+
+    .time-btn.locked {
+      border-color: #C5C5C5;
+      color: #A0A0A0;
+      background: #F3F3F3;
+      cursor: pointer;
+      box-shadow: none;
+    }
+
+    .time-btn.locked:hover {
+      background: #F3F3F3;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .time-btn .lock-icon {
+      font-size: 12px;
+    }
+
+    .time-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
     /* SUCCESS MESSAGE + CHECKMARK */
     .success-message {
       display: none;
@@ -167,7 +236,6 @@
       position: relative;
     }
 
-    /* Fade + Slide animation */
     @keyframes fadeSlideUp {
       0% {
         opacity: 0;
@@ -184,7 +252,6 @@
       animation: fadeSlideUp 0.6s ease-out forwards;
     }
 
-    /* CHECKMARK ANIMATION */
     .checkmark {
       width: 26px;
       height: 26px;
@@ -222,6 +289,103 @@
       font-size: 11px;
       color: var(--text-muted);
     }
+
+    /* POPUP ELEGANTE */
+    .popup-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .popup-backdrop.visible {
+      display: flex;
+      animation: fadeInBackdrop 0.25s ease-out forwards;
+    }
+
+    @keyframes fadeInBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .popup {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 18px 20px;
+      max-width: 320px;
+      width: 90%;
+      border: 1px solid var(--primary-soft);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+      animation: popupIn 0.25s ease-out forwards;
+    }
+
+    @keyframes popupIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .popup-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .popup-title span.icon {
+      font-size: 16px;
+    }
+
+    .popup-text {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    .popup-actions {
+      text-align: right;
+    }
+
+    .popup-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+
+    .popup-btn:hover {
+      background: #8E6844;
+    }
+
+    .popup-btn:active {
+      transform: scale(0.97);
+    }
+
+    .loading-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .error-text {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 4px;
+    }
   </style>
 </head>
 
@@ -236,7 +400,7 @@
     <main>
       <section class="card">
         <h2 class="card-title">Request your session</h2>
-        <p class="card-subtitle">Fill in your details and we’ll confirm via WhatsApp.</p>
+        <p class="card-subtitle">Choose your date and time, and we’ll confirm via WhatsApp.</p>
 
         <form id="booking-form">
           <div class="form-group">
@@ -265,12 +429,18 @@
             <div class="form-group">
               <label for="date">Preferred date</label>
               <input id="date" name="date" type="date" required />
-            </div>
-            <div class="form-group">
-              <label for="time">Preferred time</label>
-              <input id="time" name="time" type="time" required />
+              <div id="date-status" class="loading-text"></div>
             </div>
           </div>
+
+          <div class="time-section">
+            <div class="time-label">Available time slots</div>
+            <div id="time-buttons" class="time-grid"></div>
+            <div id="time-info" class="time-info">Select a date to see available times.</div>
+          </div>
+
+          <!-- Campo oculto para enviar la hora seleccionada -->
+          <input type="hidden" id="time" name="time" required />
 
           <button type="submit" class="btn-submit">Request appointment</button>
 
@@ -288,28 +458,168 @@
       </section>
 
       <footer class="footer">
-        © 2026 Your Studio · All rights reserved
+        © 2026 JessMakeUP · All rights reserved
       </footer>
     </main>
   </div>
 
+  <!-- POPUP ELEGANTE -->
+  <div id="popup-backdrop" class="popup-backdrop">
+    <div class="popup">
+      <div class="popup-title">
+        <span class="icon">🔒</span>
+        <span>This time slot is taken</span>
+      </div>
+      <div class="popup-text">
+        This time is already booked. Please choose another available time slot.
+      </div>
+      <div class="popup-actions">
+        <button type="button" id="popup-close" class="popup-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // 🔗 REEMPLAZA ESTA URL POR LA DEL WEBHOOK "check-availability" DE MAKE
+    const AVAILABILITY_WEBHOOK_URL = "https://hook.eu1.make.com/TU_WEBHOOK_CHECK_AVAILABILITY";
+
+    // 🔗 ESTA ES LA URL QUE YA USAS PARA ENVIAR LA RESERVA
+    const BOOKING_WEBHOOK_URL = "https://hook.eu1.make.com/d4ov7so39h3cujow8d2du4549j4n6pqf";
+
     const form = document.getElementById('booking-form');
     const success = document.getElementById('success');
+    const dateInput = document.getElementById('date');
+    const dateStatus = document.getElementById('date-status');
+    const timeButtonsContainer = document.getElementById('time-buttons');
+    const timeInfo = document.getElementById('time-info');
+    const hiddenTimeInput = document.getElementById('time');
+
+    const popupBackdrop = document.getElementById('popup-backdrop');
+    const popupClose = document.getElementById('popup-close');
+
+    let selectedTime = null;
+
+    function openPopup() {
+      popupBackdrop.classList.add('visible');
+    }
+
+    function closePopup() {
+      popupBackdrop.classList.remove('visible');
+    }
+
+    popupClose.addEventListener('click', closePopup);
+    popupBackdrop.addEventListener('click', (e) => {
+      if (e.target === popupBackdrop) closePopup();
+    });
+
+    function clearTimeSelection() {
+      selectedTime = null;
+      hiddenTimeInput.value = "";
+      const buttons = timeButtonsContainer.querySelectorAll('.time-btn');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function renderTimeButtons(slots) {
+      timeButtonsContainer.innerHTML = "";
+      clearTimeSelection();
+
+      if (!slots || slots.length === 0) {
+        timeInfo.textContent = "No time slots available for this date.";
+        return;
+      }
+
+      timeInfo.textContent = "Tap a time to select your preferred slot.";
+
+      slots.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.classList.add('time-btn');
+        btn.textContent = slot.time;
+
+        if (slot.status === "booked") {
+          btn.classList.add('locked');
+          const lockSpan = document.createElement('span');
+          lockSpan.classList.add('lock-icon');
+          lockSpan.textContent = "🔒";
+          btn.appendChild(lockSpan);
+
+          btn.addEventListener('click', () => {
+            openPopup();
+          });
+        } else {
+          btn.addEventListener('click', () => {
+            const all = timeButtonsContainer.querySelectorAll('.time-btn');
+            all.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedTime = slot.time;
+            hiddenTimeInput.value = slot.time;
+          });
+        }
+
+        timeButtonsContainer.appendChild(btn);
+      });
+    }
+
+    async function fetchAvailability(dateValue) {
+      dateStatus.textContent = "Checking availability…";
+      dateStatus.className = "loading-text";
+      timeButtonsContainer.innerHTML = "";
+      timeInfo.textContent = "Loading available time slots…";
+      clearTimeSelection();
+
+      try {
+        const response = await fetch(AVAILABILITY_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ date: dateValue })
+        });
+
+        if (!response.ok) {
+          throw new Error("Availability request failed");
+        }
+
+        const data = await response.json();
+        // Esperamos algo como: { "slots": [ { "time": "10:00", "status": "available" }, ... ] }
+        renderTimeButtons(data.slots || []);
+        dateStatus.textContent = "";
+      } catch (error) {
+        console.error(error);
+        dateStatus.textContent = "Could not load availability. Please try again.";
+        dateStatus.className = "error-text";
+        timeButtonsContainer.innerHTML = "";
+        timeInfo.textContent = "Select a date to see available times.";
+      }
+    }
+
+    dateInput.addEventListener('change', () => {
+      const value = dateInput.value;
+      if (!value) return;
+      fetchAvailability(value);
+    });
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
+
+      if (!hiddenTimeInput.value) {
+        timeInfo.textContent = "Please select a time slot before submitting.";
+        timeInfo.classList.add('error-text');
+        return;
+      } else {
+        timeInfo.classList.remove('error-text');
+      }
 
       const data = {
         name: form.name.value,
         phone: form.phone.value,
         service: form.service.value,
         date: form.date.value,
-        time: form.time.value
+        time: hiddenTimeInput.value
       };
 
       try {
-        const response = await fetch("https://hook.eu1.make.com/d4ov7so39h3cujow8d2du4549j4n6pqf", {
+        const response = await fetch(BOOKING_WEBHOOK_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -320,6 +630,11 @@
         if (response.ok) {
           success.classList.add('visible');
           form.reset();
+          timeButtonsContainer.innerHTML = "";
+          timeInfo.textContent = "Select a date to see available times.";
+          selectedTime = null;
+          hiddenTimeInput.value = "";
+          dateStatus.textContent = "";
         } else {
           alert("There was an issue sending your request. Please try again.");
         }
@@ -328,6 +643,5 @@
       }
     });
   </script>
-
 </body>
 </html>
