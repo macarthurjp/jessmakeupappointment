@@ -479,170 +479,118 @@
     </div>
   </div>
 
-  <script>
-    // 🔗 REEMPLAZA ESTA URL POR LA DEL WEBHOOK "check-availability" DE MAKE
-    const AVAILABILITY_WEBHOOK_URL = "https://hook.eu1.make.com/eyn7pky9mpiaooyasmnvmm8cj67jc3qp";
+ <script>
+/* ============================================================
+   1. FUNCIÓN: Cargar disponibilidad desde Make
+   ============================================================ */
+async function fetchAvailability(dateValue) {
+  dateStatus.textContent = "Checking availability…";
+  dateStatus.className = "loading-text";
+  timeButtonsContainer.innerHTML = "";
+  timeInfo.textContent = "Loading available time slots…";
+  clearTimeSelection();
 
-    // 🔗 ESTA ES LA URL QUE YA USAS PARA ENVIAR LA RESERVA
-    const BOOKING_WEBHOOK_URL = "https://hook.eu1.make.com/d4ov7so39h3cujow8d2du4549j4n6pqf";
-
-    const form = document.getElementById('booking-form');
-    const success = document.getElementById('success');
-    const dateInput = document.getElementById('date');
-    const dateStatus = document.getElementById('date-status');
-    const timeButtonsContainer = document.getElementById('time-buttons');
-    const timeInfo = document.getElementById('time-info');
-    const hiddenTimeInput = document.getElementById('time');
-
-    const popupBackdrop = document.getElementById('popup-backdrop');
-    const popupClose = document.getElementById('popup-close');
-
-    let selectedTime = null;
-
-    function openPopup() {
-      popupBackdrop.classList.add('visible');
-    }
-
-    function closePopup() {
-      popupBackdrop.classList.remove('visible');
-    }
-
-    popupClose.addEventListener('click', closePopup);
-    popupBackdrop.addEventListener('click', (e) => {
-      if (e.target === popupBackdrop) closePopup();
+  try {
+    const response = await fetch(AVAILABILITY_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ date: dateValue })
     });
 
-    function clearTimeSelection() {
+    if (!response.ok) {
+      throw new Error("Availability request failed");
+    }
+
+    const data = await response.json();
+    console.log("Respuesta del webhook (availability):", data);
+
+    // Make devuelve: { "availableTimes": ["10:00","11:00", ...] }
+    const times = data.availableTimes;
+
+    if (!times || !Array.isArray(times) || times.length === 0) {
+      throw new Error("No se recibieron horarios");
+    }
+
+    renderTimeButtons(times);
+    dateStatus.textContent = "";
+    timeInfo.textContent = "Select a time:";
+
+  } catch (error) {
+    console.error(error);
+    dateStatus.textContent = "Could not load availability. Please try again.";
+    dateStatus.className = "error-text";
+    timeButtonsContainer.innerHTML = "";
+    timeInfo.textContent = "Select a date to see available times.";
+  }
+}
+
+/* ============================================================
+   2. EVENTO: Cuando el usuario selecciona una fecha
+   ============================================================ */
+dateInput.addEventListener('change', () => {
+  const value = dateInput.value;
+  if (!value) return;
+  fetchAvailability(value);
+});
+
+/* ============================================================
+   3. EVENTO: Enviar la reserva al webhook de Make
+   ============================================================ */
+form.addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  if (!hiddenTimeInput.value) {
+    timeInfo.textContent = "Please select a time slot before submitting.";
+    timeInfo.classList.add('error-text');
+    return;
+  } else {
+    timeInfo.classList.remove('error-text');
+  }
+
+  const data = {
+    name: form.name.value,
+    phone: form.phone.value,
+    service: form.service.value,
+    date: form.date.value,
+    time: hiddenTimeInput.value
+  };
+
+  try {
+    const response = await fetch(BOOKING_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    console.log("Respuesta del webhook (booking):", result);
+
+    if (response.ok) {
+      success.classList.add('visible');
+      form.reset();
+
+      timeButtonsContainer.innerHTML = "";
+      timeInfo.textContent = "Select a date to see available times.";
       selectedTime = null;
       hiddenTimeInput.value = "";
-      const buttons = timeButtonsContainer.querySelectorAll('.time-btn');
-      buttons.forEach(btn => btn.classList.remove('selected'));
+      dateStatus.textContent = "";
+    } else {
+      alert("There was an issue sending your request. Please try again.");
     }
 
-    function renderTimeButtons(slots) {
-      timeButtonsContainer.innerHTML = "";
-      clearTimeSelection();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Network error. Please check your connection and try again.");
+  }
+});
+</script>
 
-      if (!slots || slots.length === 0) {
-        timeInfo.textContent = "No time slots available for this date.";
-        return;
-      }
-
-      timeInfo.textContent = "Tap a time to select your preferred slot.";
-
-      slots.forEach(slot => {
-        const btn = document.createElement('button');
-        btn.type = "button";
-        btn.classList.add('time-btn');
-        btn.textContent = slot.time;
-
-        if (slot.status === "booked") {
-          btn.classList.add('locked');
-          const lockSpan = document.createElement('span');
-          lockSpan.classList.add('lock-icon');
-          lockSpan.textContent = "🔒";
-          btn.appendChild(lockSpan);
-
-          btn.addEventListener('click', () => {
-            openPopup();
-          });
-        } else {
-          btn.addEventListener('click', () => {
-            const all = timeButtonsContainer.querySelectorAll('.time-btn');
-            all.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedTime = slot.time;
-            hiddenTimeInput.value = slot.time;
-          });
-        }
-
-        timeButtonsContainer.appendChild(btn);
-      });
-    }
-
-    async function fetchAvailability(dateValue) {
-      dateStatus.textContent = "Checking availability…";
-      dateStatus.className = "loading-text";
-      timeButtonsContainer.innerHTML = "";
-      timeInfo.textContent = "Loading available time slots…";
-      clearTimeSelection();
-
-      try {
-        const response = await fetch(AVAILABILITY_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ date: dateValue })
-        });
-
-        if (!response.ok) {
-          throw new Error("Availability request failed");
-        }
-
-        const data = await response.json();
-        // Esperamos algo como: { "slots": [ { "time": "10:00", "status": "available" }, ... ] }
-        renderTimeButtons(data.slots || []);
-        dateStatus.textContent = "";
-      } catch (error) {
-        console.error(error);
-        dateStatus.textContent = "Could not load availability. Please try again.";
-        dateStatus.className = "error-text";
-        timeButtonsContainer.innerHTML = "";
-        timeInfo.textContent = "Select a date to see available times.";
-      }
-    }
-
-    dateInput.addEventListener('change', () => {
-      const value = dateInput.value;
-      if (!value) return;
-      fetchAvailability(value);
-    });
-
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      if (!hiddenTimeInput.value) {
-        timeInfo.textContent = "Please select a time slot before submitting.";
-        timeInfo.classList.add('error-text');
-        return;
-      } else {
-        timeInfo.classList.remove('error-text');
-      }
-
-      const data = {
-        name: form.name.value,
-        phone: form.phone.value,
-        service: form.service.value,
-        date: form.date.value,
-        time: hiddenTimeInput.value
-      };
-
-      try {
-        const response = await fetch(BOOKING_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          success.classList.add('visible');
-          form.reset();
-          timeButtonsContainer.innerHTML = "";
-          timeInfo.textContent = "Select a date to see available times.";
-          selectedTime = null;
-          hiddenTimeInput.value = "";
-          dateStatus.textContent = "";
-        } else {
-          alert("There was an issue sending your request. Please try again.");
-        }
-      } catch (error) {
-        alert("Network error. Please check your connection and try again.");
-      }
-    });
-  </script>
 </body>
 </html>
+
+
 
